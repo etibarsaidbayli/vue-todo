@@ -1,17 +1,27 @@
 <template>
-  <li class="todo__item">
-    <div class="todo__item-name" v-if="!isEdit">
-      <input class="todo__item-checkbox" type="checkbox" />
+  <li :class="[todo.isCompleted ? 'todo__item completee' : 'todo__item']">
+    <div class="todo__item-name" v-if="!this.isEdit">
+      <input
+        v-model="todo.isCompleted"
+        @input="this.$emit('completedTask', todo.id)"
+        class="todo__item-checkbox"
+        type="checkbox"
+      />
       <strong>{{ todo.title }}</strong>
     </div>
-    <div v-else="isEdit">
-    <input 
-    type="text" 
-    v-model="editText"
-     />
-    </div>
-    <div class="todo__btns">
-      <button @click="editTodo">Redakte et</button>
+    <form @submit="handleFormSubmit" class="isEdit__form" v-else="this.isEdit">
+      <input class="form__input" type="text" v-model="this.editedText" />
+      <button
+        class="formSave__btn"
+        @click="this.$emit('editedTodo', this.editedText, todo.id)"
+        :disabled="!this.editedText || !this.editedText.trim()"
+      >
+        Save
+      </button>
+    </form>
+
+    <div class="todo__btns" v-show="!this.isEdit">
+      <button @click="editTodo">Redakt</button>
       <button @click="this.$emit('removeTodo', todo.id)">Sil</button>
     </div>
   </li>
@@ -24,21 +34,29 @@ export default {
       type: Object,
       required: true,
     },
-
-    data() {
-      return {
-        isEdit:true,
-        editText:""
-      };
+  },
+  data() {
+    return {
+      isEdit: false,
+      editedText: "",
+      completed: false,
+    };
+  },
+  methods: {
+    editTodo() {
+      this.isEdit = true;
+      // this.$emit("editTodo", this.editedText);
     },
-    methods: {
-      
-      editTodo() {
-        this.isEdit=true
-        // this.$emit('editTodo', this.editText)
-      },
+    handleFormSubmit(e) {
+      e.preventDefault();
+      this.isEdit = false;
+    },
+
+    completeTask(task) {
+      task.isCompleted = !task.isCompleted;
     },
   },
+  computed: {},
 };
 </script>
 
@@ -73,12 +91,43 @@ export default {
 }
 
 .todo__btns button:first-child {
-  background: lightblue;
-  color: green;
+  background: rgb(79, 104, 113);
+  color: rgb(209, 224, 209);
 }
 
 .todo__btns button:last-child {
   background: red;
   color: #fff;
+}
+
+.isEdit__form {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.form__input {
+  flex-grow: 1;
+  padding: 5px;
+}
+.formSave__btn {
+  padding: 5px;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: greenyellow;
+  color: rgb(6, 7, 7);
+  font-weight: bold;
+}
+
+.formSave__btn:disabled {
+  opacity: 0.7;
+  color: #fff;
+}
+
+.completee {
+  background-color: red;
 }
 </style>

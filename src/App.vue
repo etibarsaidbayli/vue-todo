@@ -2,13 +2,15 @@
   <div class="container">
     <h1 class="title__app">Todo app from VueJS</h1>
     <MyForm @addTodo="addTodo" />
+
     <ul class="todo__wrapper">
-      <TodoItem 
-      v-for="todoItem in todos" 
-      :key="todoItem.id" 
-      :todo="todoItem" 
-      @removeTodo="removeTodo"
-      @editTodo="editTodo"
+      <TodoItem
+        v-for="todoItem in todos"
+        :key="todoItem.id"
+        :todo="todoItem"
+        @removeTodo="removeTodo"
+        @editedTodo="editedTodo"
+        @completedTask="completedTask"
       />
     </ul>
   </div>
@@ -31,18 +33,23 @@ export default {
   methods: {
     addTodo(newTodo) {
       this.todos.push(newTodo);
-      console.log(this.todos);
     },
-     removeTodo(id) {
-      this.todos=this.todos.filter((todo) => todo.id !== id)
+    removeTodo(id) {
+      this.todos = this.todos.filter((todo) => todo.id !== id);
     },
-    editTodo () {
-      console.log(editTodo)
-    } 
+    editedTodo(newText, id) {
+      // this.todos.map((todo) => todo.title=newText)
+      // if(!newText.length || !newText.trim()) {
+      //   return  alert('bosh xana olmaz  ')
+      // }
+      let f = this.todos.find((todo) => todo.id === id);
+      f.title = newText;
+    },
+    completedTask(id) {
+      let f = this.todos.find((todo) => todo.id === id);
+      f.isCompleted = true;
+    },
   },
-  computed: {
-    
-  }
 };
 </script>
 
